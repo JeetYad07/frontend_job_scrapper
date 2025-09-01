@@ -1,0 +1,21 @@
+name: Daily Frontend Jobs (Node.js)
+
+on:
+  schedule:
+    - cron: "00 22 * * *"   # 7PM IST = 13:30 UTC
+  workflow_dispatch:        # allow manual trigger
+
+jobs:
+  job-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm install
+      - run: node job_scrapper.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
