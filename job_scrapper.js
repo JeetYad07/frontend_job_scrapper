@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
 import nodemailer from "nodemailer";
 
-const companies = ["stripe", "coinbase", "doordash","paytm","phonepe","microsoft"]; // Greenhouse boards
-const keywords = ["frontend", "react", "typescript", "node", "javascript", "html", "css"];
+const companies = ["stripe", "coinbase", "doordash","paytm","phonepe","microsoft","cgi","meta","microland","intuit"]; // Greenhouse boards
+const keywords = ["frontend", "react", "typescript", "node", "javascript", "html", "css","java","backend","sql","nosql","springboot","python","sales"];
 
 async function fetchJobs() {
   let jobsFound = [];
