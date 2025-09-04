@@ -43,7 +43,7 @@ async function sendEmail(jobs) {
 
   await transporter.sendMail({
     from: `"Job Bot 🤖" <${process.env.EMAIL_USER}>`,
-    to: "imjeet227@gmail.com",
+    to: process.env.TO_EMAIL,
     subject: "Daily Frontend Jobs Digest",
     text: body,
   });
