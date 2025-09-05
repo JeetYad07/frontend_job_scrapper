@@ -2,7 +2,24 @@ import fetch from "node-fetch";
 import nodemailer from "nodemailer";
 
 const companies = ["stripe", "coinbase", "doordash"]; // Greenhouse boards
-const keywords = ["frontend", "react", "typescript", "node", "javascript", "html", "css","java","backend","sql","nosql","springboot","python","sales"];
+const keywords = [
+  "frontend",
+  "backend",
+  "fullstack",
+  "react",
+  "typescript",
+  "javascript",
+  "node",
+  "html",
+  "css",
+  "software engineer",
+  "developer",
+  "python",
+  "java",
+  "springboot",
+  "sql",
+  "nosql"
+];
 
 async function fetchJobs() {
   let jobsFound = [];
@@ -17,8 +34,14 @@ async function fetchJobs() {
         const title = job.title.toLowerCase();
         const desc = (job.content || "").toLowerCase();
 
-        if (keywords.some((kw) => title.includes(kw) || desc.includes(kw)) && desc.includes("3")) {
-          jobsFound.push(`${job.title} @ ${company} - ${job.absolute_url}`);
+        console.log(`🔎 Checking: ${job.title} @ ${company}`);
+
+        if (keywords.some((kw) => title.includes(kw) || desc.includes(kw))) {
+          const jobInfo = `${job.title} @ ${company} - ${job.absolute_url}`;
+          console.log(`✅ MATCHED: ${jobInfo}`);
+          jobsFound.push(jobInfo);
+        } else {
+          console.log(`❌ Skipped: ${job.title}`);
         }
       }
     } catch (err) {
@@ -30,25 +53,25 @@ async function fetchJobs() {
 
 async function sendEmail(jobs) {
   const body = jobs.length
-    ? `Hi Jeet,\n\nHere are today's frontend jobs:\n\n${jobs.join("\n")}`
+    ? `Hi Jeet,\n\nHere are today's matching jobs:\n\n${jobs.join("\n")}`
     : "No matching jobs today.";
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // Gmail App Password
+      user: process.env.EMAIL_USER, // Gmail (App Password)
+      pass: process.env.EMAIL_PASS,
     },
   });
 
   await transporter.sendMail({
     from: `"Job Bot 🤖" <${process.env.EMAIL_USER}>`,
     to: process.env.TO_EMAIL,
-    subject: "Daily Frontend Jobs Digest",
+    subject: "Daily Frontend/Backend Jobs Digest",
     text: body,
   });
 
-  console.log("✅ Email sent to Jeet!");
+  console.log("📧 Email sent!");
 }
 
 (async () => {
