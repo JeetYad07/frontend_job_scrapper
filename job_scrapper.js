@@ -1,24 +1,15 @@
 import fetch from "node-fetch";
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+// Load .env variables
+dotenv.config();
 
 const companies = ["stripe", "coinbase", "doordash"]; // Greenhouse boards
 const keywords = [
-  "frontend",
-  "backend",
-  "fullstack",
-  "react",
-  "typescript",
-  "javascript",
-  "node",
-  "html",
-  "css",
-  "software engineer",
-  "developer",
-  "python",
-  "java",
-  "springboot",
-  "sql",
-  "nosql"
+  "frontend", "react", "typescript", "node", "javascript",
+  "html", "css", "java", "backend", "sql", "nosql",
+  "springboot", "python", "sales"
 ];
 
 async function fetchJobs() {
@@ -34,14 +25,8 @@ async function fetchJobs() {
         const title = job.title.toLowerCase();
         const desc = (job.content || "").toLowerCase();
 
-        console.log(`🔎 Checking: ${job.title} @ ${company}`);
-
         if (keywords.some((kw) => title.includes(kw) || desc.includes(kw))) {
-          const jobInfo = `${job.title} @ ${company} - ${job.absolute_url}`;
-          console.log(`✅ MATCHED: ${jobInfo}`);
-          jobsFound.push(jobInfo);
-        } else {
-          console.log(`❌ Skipped: ${job.title}`);
+          jobsFound.push(`${job.title} @ ${company} - ${job.absolute_url}`);
         }
       }
     } catch (err) {
@@ -53,25 +38,30 @@ async function fetchJobs() {
 
 async function sendEmail(jobs) {
   const body = jobs.length
-    ? `Hi Jeet,\n\nHere are today's matching jobs:\n\n${jobs.join("\n")}`
+    ? `Hi Jeet,\n\nHere are today's frontend jobs:\n\n${jobs.join("\n")}`
     : "No matching jobs today.";
+
+  // Debug env variables
+  console.log("USER:", process.env.EMAIL_USER);
+  console.log("PASS exists:", !!process.env.EMAIL_PASS);
+  console.log("TO:", process.env.TO_EMAIL);
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER, // Gmail (App Password)
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS, // Gmail App Password
     },
   });
 
   await transporter.sendMail({
     from: `"Job Bot 🤖" <${process.env.EMAIL_USER}>`,
     to: process.env.TO_EMAIL,
-    subject: "Daily Frontend/Backend Jobs Digest",
+    subject: "Daily Frontend Jobs Digest",
     text: body,
   });
 
-  console.log("📧 Email sent!");
+  console.log("✅ Email sent to Jeet!");
 }
 
 (async () => {
